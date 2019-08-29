@@ -51,13 +51,14 @@ def estimate_fitness():
             if i == 0:
                 r_hat = r_mut_i
             else:
-
                 r_hat1 = ( ((1+x_mut) ** (times[1]-times[0])) * r_mut_i ) / (1 + x_mean)
-
                 r_hat2 = read_counts_mut[i-1] / (2**(times[i]-times[i-1]))
                 r_hat = max(r_hat1, r_hat2)
 
+                print(r_hat)
+
             L -= np.log(  np.sqrt(np.sqrt(r_hat) / ( 4*math.pi*k*(r_mut_i**(3/2)))) * np.exp(-1* ((np.sqrt(r_mut_i)-np.sqrt(r_hat))**2)/k) )
+
         return L
 
     f_mut_t0_init = read_counts_mut[0] / (read_counts_anc[0] + read_counts_mut[0])
@@ -82,10 +83,10 @@ def estimate_fitness():
 
 
 
-#estimate_fitness()
+estimate_fitness()
 
 
-mat_contents = sio.loadmat('/Users/WRShoemaker/GitHub/BacillusBarcodes/Python/FitSeq.m')
+#mat_contents = sio.loadmat('/Users/WRShoemaker/GitHub/BacillusBarcodes/Python/FitSeq.m')
 
 
 
