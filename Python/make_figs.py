@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 import  matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 path = os.path.expanduser("~/GitHub/BacillusBarcodes")
 
@@ -37,31 +38,65 @@ with open(path + '/data/barcode_counts.txt', 'r') as fh:
 
         x1 = np.exp( (np.log(f1) - np.log(0.5)) / time ) - 1
         x2 = np.exp( (np.log(f2) - np.log(0.5)) / time ) - 1
-
-        print(f1)
-
         mean_x = (x1*f1) + (x2*f2)
 
-        if 'F2' in name:
-            fitness = x1
-        else:
-            fitness = x2
+        #if 'F2' in name:
+        #    fitness = x1
+        #else:
+        #    fitness = x2
 
+        name_bc1 = name + '-bc1'
+        name_bc2 = name + '-bc2'
 
-        if name not in fit_dic:
-            fit_dic[name] = [fitness]
+        if name_bc1 not in fit_dic:
+            fit_dic[name_bc1] = [x1]
         else:
-            fit_dic[name].append(fitness)
+            fit_dic[name_bc1].append(x1)
+
+        if name_bc2 not in fit_dic:
+            fit_dic[name_bc2] = [x2]
+        else:
+            fit_dic[name_bc2].append(x2)
+
 
 mean_fit_dict = {}
-
+colow_dict = []
 for key, value in fit_dic.items():
-    fit_mean = np.mean(value)
-    flask = key.split('-')[1]
-    print(flask)
-    if flask not in mean_fit_dict:
-        mean_fit_dict[flask] = [fit_mean]
+    key_split = key.split('-')
+    new_key = key_split[1] + '-' + key_split[3]
+    if new_key not in mean_fit_dict:
+        mean_fit_dict[new_key] = [np.mean(value)]
     else:
-        mean_fit_dict[flask].append(fit_mean)
+        mean_fit_dict[new_key].append(np.mean(value))
 
-print(mean_fit_dict)
+fig = plt.figure()
+plt.axhline(y=0, color = 'dimgrey', lw = 2, ls = '--', zorder=1)
+for key, value in mean_fit_dict.items():
+
+    i = int(key.split('-')[0][1])
+    if 'bc1' in key:
+        c = 'b'
+    else:
+        c = 'r'
+    x = np.random.normal(i, 0.04, size=len(value))
+    plt.scatter(x, value, color = c, alpha=0.8, zorder=2)
+
+
+x1 = [1,1.5,2,2.5,3]
+squad = ['BC1-WT vs. BC2-R1','','BC2-WT vs BC1-R1','', 'BC1-WT vs BC2-WT']
+
+plt.xticks(x1, squad)#, rotation=45)
+plt.ylabel('Fitness', fontsize=18)
+
+
+legend_elements = [Line2D([0], [0], marker='o', color='b', label='Barcode 1',
+                        markersize=10, linestyle="None"),
+                   Line2D([0], [0], marker='o', color='r', label='Barcode 2',
+                        markersize=10, linestyle="None")]
+
+plt.legend(handles=legend_elements, loc='upper right')
+
+
+fig_name = path + '/figs/fitness.png'
+fig.savefig(fig_name, bbox_inches = "tight", pad_inches = 0.4, dpi = 600)
+plt.close()
