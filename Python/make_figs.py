@@ -10,6 +10,15 @@ path = os.path.expanduser("~/GitHub/BacillusBarcodes")
 bc1 = 'TCAGACGTGTGA'
 bc2 = 'CAGCCTAGTACG'
 
+bc1_freq_0 = {'GSF2346-F1-A':0.502632411,'GSF2346-F1-B':0.515677676,
+            'GSF2346-F1-C':0.59174401, 'GSF2346-F2-A':0.415243398,
+            'GSF2346-F2-B':0.43089695, 'GSF2346-F2-C':0.486277276,
+            'GSF2346-F3-A':0.425032152, 'GSF2346-F3-B':0.459793851,
+            'GSF2346-F3-C':0.49423082}
+
+
+
+
 # assume two fold dilution
 # log_2 (100) ~= 6.64
 time = 6.64
@@ -36,8 +45,13 @@ with open(path + '/data/barcode_counts.txt', 'r') as fh:
         f1 = bc1 / (bc1+bc2)
         f2 = 1 - f1
 
-        x1 = np.exp( (np.log(f1) - np.log(0.5)) / time ) - 1
-        x2 = np.exp( (np.log(f2) - np.log(0.5)) / time ) - 1
+        print(name, f1)
+
+        f1_0 = bc1_freq_0[name]
+        f2_0 = 1- f1_0
+
+        x1 = np.exp( (np.log(f1) - np.log(f1_0)) / time ) - 1
+        x2 = np.exp( (np.log(f2) - np.log(f2_0)) / time ) - 1
         mean_x = (x1*f1) + (x2*f2)
 
         #if 'F2' in name:
